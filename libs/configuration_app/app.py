@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import subprocess
 import os
 import time
@@ -63,8 +63,9 @@ def save_wpa_credentials():
 
     return render_template('save_wpa_credentials.html', wpa_enabled = app.config_hash['wpa_enabled'], wpa_key = app.config_hash['wpa_key'])
 
-
-
+@app.route('/<path:path>')
+def catch_all(path):
+    return redirect('/')
 
 ######## FUNCTIONS ##########
 
