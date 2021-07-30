@@ -8,25 +8,25 @@ It was tested on Raspberry Pi 3B+ with debian buster
 
 If is based on the wonderful work of Jason Burgett <https://github.com/jasbur/RaspiWiFi>
 
-However there are some key diffrences:
+However there are some key differences:
 
-- It is inteded to work as a standalone app launching any dependencies like
- hostpad and dnsmasq as subprocesses and stoping them on finish.
+- It is intended to work as a standalone app launching any dependencies like
+ hostpad and dnsmasq as sub-processes and stopping them on finish.
 
-- It doesn't restart the device, just setups the wifi and exits.
+- It doesn't restart the device, just setups the WiFi and exits.
 
 - It doesn't regenerate wpa_supplicant.conf on every run but instead just edit
  the first instance of a network={} block and leave every other setting intact.
 
 - There is no installation script and the decision on when to run the app depends
- entirelly on the user/implementator
+ entirelly on the user/integrator
 
 - When you connect to the AP it would act as a captive portal and take you to the
  configuration page without the need to open a specific address
 
 ## INSTALLATION
 
-On debian buster to setisfy the dependencies you need to run:
+On debian buster to satisfy the dependencies you need to run:
 
 ``` bash
 apt install python3-flask dnsmasq hostapd
