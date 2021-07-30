@@ -19,7 +19,7 @@ However there are some key differences:
  the first instance of a network={} block and leave every other setting intact.
 
 - There is no installation script and the decision on when to run the app depends
- entirelly on the user/integrator
+ entirely on the user/integrator
 
 - When you connect to the AP it would act as a captive portal and take you to the
  configuration page without the need to open a specific address
