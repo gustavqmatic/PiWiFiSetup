@@ -205,7 +205,7 @@ def main():
     app.hostapd = None
 
     # Stop dhcpcd and dnsmasq so they don't interfere
-    subprocess.check_call(['systemctl','stop','dhcpcd.service', 'dnsmasq.service'])
+    subprocess.check_call(['systemctl', 'stop', 'dnsmasq.service'])
 
     # Setup the ip address
     subprocess.check_call(['rfkill','unblock','wlan'])
@@ -240,8 +240,9 @@ def main():
     app.hostapd_conf.close()
     dnsmasq.terminate()
     subprocess.check_call(['ip','address','del', '10.0.0.1/24', 'dev', 'wlan0'])
-    subprocess.check_call(['systemctl','restart','wpa_supplicant.service'])
-    subprocess.check_call(['systemctl','start','dhcpcd.service', 'dnsmasq.service'])
+    subprocess.check_call(['systemctl', 'daemon-reload'])
+    subprocess.check_call(['systemctl', 'restart', 'wpa_supplicant.service', 'dhcpcd.service'])
+    subprocess.check_call(['systemctl', 'start', 'dnsmasq.service'])
 
 if __name__ == '__main__':
     main()
