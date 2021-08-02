@@ -199,9 +199,8 @@ def start_hostapd():
 
 
 def main():
-    path = os.path.abspath(os.path.dirname(__file__))
     app.debug = True
-    app.config_file = path + '/PiWiFiSetup.conf'
+    app.config_file = '/etc/PiWiFiSetup/PiWiFiSetup.conf'
     app.config_hash = config_file_hash()
     app.hostapd = None
 
@@ -234,7 +233,7 @@ def main():
     t.start()
 
     # I didn't figure out a way to use the reloader and have the hostapd and dnsmasq subprocess working
-    app.run(host = '0.0.0.0', port = 80, use_reloader=False)
+    app.run(host = '10.0.0.1', port = 80, use_reloader=False)
 
     # Cleanup
     app.hostapd.terminate()

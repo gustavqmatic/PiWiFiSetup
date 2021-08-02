@@ -51,11 +51,13 @@ apt install python3-flask dnsmasq-base hostapd
 
 ## CONFIGURATION
 
-You can create a file in the apps directory called PiWiFiSetup.conf and set the following
- settings showed here with their defaults
+The configuration file the app uses is /etc/PiWiFiSetup/PiWiFiSetup.conf.
+The file can be missing in which case the defaults are as follows:
 
 ``` config
 ssid_prefix="Pi Wifi Setup"
 wpa_enabled=1
 wpa_key="1234567890"
 ```
+
+In case you save the file via the web interface it would be update or created if missing.
