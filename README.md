@@ -24,12 +24,29 @@ However there are some key differences:
 - When you connect to the AP it would act as a captive portal and take you to the
  configuration page without the need to open a specific address
 
+## PACKAGING
+
+To build a .deb package that you can install directly you can run:
+
+``` bash
+dpkg-buildpackage -us -uc -b
+```
+
+The package would then be in the parent directory
+
 ## INSTALLATION
 
+If you have build a package all you need to do is install it:
+
+``` bash
+apt install ./pi-wifi-setup_*_all.deb
+```
+
+Or you can install only the required packages.
 On debian buster to satisfy the dependencies you need to run:
 
 ``` bash
-apt install python3-flask dnsmasq hostapd
+apt install python3-flask dnsmasq-base hostapd
 ```
 
 ## CONFIGURATION
