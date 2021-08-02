@@ -51,7 +51,7 @@ apt install python3-flask dnsmasq-base hostapd
 
 ## CONFIGURATION
 
-You can create a file in the apps directory called PiWiFiSetup.conf and set the following 
+You can create a file in the apps directory called PiWiFiSetup.conf and set the following
  settings showed here with their defaults
 
 ``` config
