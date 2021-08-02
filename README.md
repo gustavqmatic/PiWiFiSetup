@@ -6,7 +6,7 @@ a Chromecast or similar device can be configured).
 
 It was tested on Raspberry Pi 3B+ with debian buster
 
-If is based on the wonderful work of Jason Burgett <https://github.com/jasbur/RaspiWiFi>
+It is based on the wonderful work of Jason Burgett <https://github.com/jasbur/RaspiWiFi>
 
 However there are some key differences:
 
