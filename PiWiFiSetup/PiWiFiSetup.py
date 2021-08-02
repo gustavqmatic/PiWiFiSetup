@@ -197,7 +197,8 @@ def start_hostapd():
     t = Thread(target=output_reader, args=(app.hostapd,))
     t.start()
 
-if __name__ == '__main__':
+
+def main():
     path = os.path.abspath(os.path.dirname(__file__))
     app.debug = True
     app.config_file = path + '/PiWiFiSetup.conf'
@@ -219,21 +220,21 @@ if __name__ == '__main__':
 
     # Start dnsmasq
     dnsmasq = subprocess.Popen(['dnsmasq', '-C', '/dev/null', '--no-daemon', 
-                                           '--interface','wlan0',
-                                           '--bind-interfaces',
-                                           '--except-interface','lo',
-                                           '--dhcp-range','10.0.0.10,10.0.0.15,12h',
-                                           '--address','/#/10.0.0.1',
-                                           '--no-resolv',
-                                           '--no-hosts'
-                                           ],
+                                        '--interface','wlan0',
+                                        '--bind-interfaces',
+                                        '--except-interface','lo',
+                                        '--dhcp-range','10.0.0.10,10.0.0.15,12h',
+                                        '--address','/#/10.0.0.1',
+                                        '--no-resolv',
+                                        '--no-hosts'
+                                        ],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT)
     t = Thread(target=output_reader, args=(dnsmasq,))
     t.start()
 
     # I didn't figure out a way to use the reloader and have the hostapd and dnsmasq subprocess working
-    app.run(host = '10.0.0.1', port = 80, use_reloader=False)
+    app.run(host = '0.0.0.0', port = 80, use_reloader=False)
 
     # Cleanup
     app.hostapd.terminate()
@@ -242,3 +243,6 @@ if __name__ == '__main__':
     subprocess.check_call(['ip','address','del', '10.0.0.1/24', 'dev', 'wlan0'])
     subprocess.check_call(['systemctl','restart','wpa_supplicant.service'])
     subprocess.check_call(['systemctl','start','dhcpcd.service', 'dnsmasq.service'])
+
+if __name__ == '__main__':
+    main()
