@@ -7,3 +7,4 @@ debian/pi-wifi-setup*
 debian/.debhelper
 build
 dist
+.pybuild
