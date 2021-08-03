@@ -1,3 +1,9 @@
+pi-wifi-setup (0.0.2) unstable; urgency=low
+
+  * Add systemd timer and service to run after boot
+
+ -- Anton Avramov <avramov@lukanet.com>  Mon, 02 Aug 2021 17:58:56 -0400
+
 pi-wifi-setup (0.0.1) unstable; urgency=low
 
   * Initial Release
