@@ -1,0 +1,7 @@
+[Unit]
+Description=Setup Wifi Network
+#After=network.target
+
+[Service]
+ExecStartPre=/bin/sh -c 'if /usr/sbin/ip a | /bin/fgrep " state UP "; then /bin/false; else /bin/true; fi'
+ExecStart=/usr/bin/PiWiFiSetup
