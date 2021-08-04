@@ -49,6 +49,16 @@ On debian buster to satisfy the dependencies you need to run:
 apt install python3-flask dnsmasq-base hostapd
 ```
 
+In the package are included .service and .timer systemd control files.
+The service would only start if there isn't any connection in state UP.
+The timer would run only once after boot.
+You can override those defaults using:
+
+``` bash
+systemctl edit pi-wifi-setup.service
+systemctl edit pi-wifi-setup.timer
+```
+
 ## CONFIGURATION
 
 The configuration file the app uses is /etc/PiWiFiSetup/PiWiFiSetup.conf.
