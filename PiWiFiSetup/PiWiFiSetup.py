@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, redirect
-import subprocess
 import os
 import time
+import subprocess
 from threading import Thread
+
+from flask import Flask, render_template, request, redirect
+from string import Template
 import fileinput
 import tempfile
 
@@ -155,7 +157,7 @@ def update_wpa(wpa_enabled, wpa_key):
 
 def config_file_hash():
     #defaults
-    config_hash = {'ssid_prefix': 'Pi Wifi Setup',
+    config_hash = {'ssid_prefix': 'Pi $id Wifi Setup',
                    'wpa_enabled': '1', 
                    'wpa_key': '1234567890'}
     if os.path.isfile(app.config_file):
@@ -165,6 +167,13 @@ def config_file_hash():
             line_key = line.split("=")[0]
             line_value = line.split("=")[1].rstrip()
             config_hash[line_key] = line_value
+    
+    if os.path.isfile('/proc/device-tree/serial-number') and os.access('/proc/device-tree/serial-number', os.R_OK):
+        with open('/proc/device-tree/serial-number', 'r') as f:
+            id = f.readline()[8:].rstrip('\x00')
+        if id:
+            t = Template(config_hash['ssid_prefix'])
+            config_hash['ssid_prefix'] = t.substitute(id=id)
 
     return config_hash
 

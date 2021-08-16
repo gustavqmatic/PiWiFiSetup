@@ -1,3 +1,9 @@
+pi-wifi-setup (0.0.4) unstable; urgency=low
+
+  * Add $id variable in the ssid replaced by the device serial number on setup
+
+ -- Anton Avramov <avramov@lukanet.com>  Mon, 16 Aug 2021 11:52:10 -0400
+
 pi-wifi-setup (0.0.3) unstable; urgency=low
 
   * Fix missing files 
