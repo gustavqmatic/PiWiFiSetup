@@ -65,9 +65,10 @@ The configuration file the app uses is /etc/PiWiFiSetup/PiWiFiSetup.conf.
 The file can be missing in which case the defaults are as follows:
 
 ``` config
-ssid_prefix="Pi Wifi Setup"
+ssid_prefix="Pi $id Wifi Setup"
 wpa_enabled=1
 wpa_key="1234567890"
 ```
 
+The $id is replaced with the serial-number of the device
 In case you save the file via the web interface it would be update or created if missing.
