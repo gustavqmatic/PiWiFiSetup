@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="PiWiFiSetup",
-    version="0.0.4",
+    version="0.0.5",
     author="Lukanet Ltd",
     author_email="avramov@lukanet.com",
     description="PiWiFiSetup is a program to headlessly configure a Raspberry Pi's WiFi connection using any other WiFi-enabled device",
@@ -23,7 +23,7 @@ setuptools.setup(
     #package_dir={"": "src"},
     #packages=setuptools.find_packages(where="src"),
     packages=['PiWiFiSetup'],
-    python_requires=">=3.6",
+    python_requires=">=3",
     install_requires=['Flask'],
     include_package_data=True,
     zip_safe=False,

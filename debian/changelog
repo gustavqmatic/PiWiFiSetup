@@ -1,3 +1,9 @@
+pi-wifi-setup (0.0.5) unstable; urgency=low
+
+  * Update to run with all python3 versions
+
+ -- Anton Avramov <avramov@lukanet.com>  Fri, 18 Feb 2022 16:22:38 -0500
+
 pi-wifi-setup (0.0.4) unstable; urgency=low
 
   * Add $id variable in the ssid replaced by the device serial number on setup
