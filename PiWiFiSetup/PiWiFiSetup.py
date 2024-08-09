@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import signal
 import time
 import subprocess
 from threading import Thread
@@ -8,7 +9,10 @@ from flask import Flask, render_template, request, redirect
 from string import Template
 import fileinput
 import tempfile
+import time
+import uuid
 
+PID = os.getpid()
 app = Flask(__name__)
 
 @app.route('/')
@@ -27,18 +31,28 @@ def wpa_settings():
     return render_template('wpa_settings.html', wpa_enabled = app.config_hash['wpa_enabled'], wpa_key = app.config_hash['wpa_key'])
 
 
+def shut_down_web_server():
+    # this mimics a CTRL+C hit by sending SIGINT
+    # it ends the app run, but not the main thread
+    pid = os.getpid()
+    assert pid == PID
+    def shutdown():
+        time.sleep(10)  # Wait for 10 seconds
+        os.kill(pid, signal.SIGINT)
+    shutdown_thread = Thread(target=shutdown)
+    shutdown_thread.start()
+
+
 @app.route('/save_credentials', methods = ['GET', 'POST'])
 def save_credentials():
+    global ssid
     ssid = request.form['ssid']
     wifi_key = request.form['wifi_key']
 
     create_wpa_supplicant(ssid, wifi_key)
     
     # shutdown
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
+    shut_down_web_server()
 
     return render_template('save_credentials.html', ssid = ssid)
 
@@ -81,38 +95,29 @@ def scan_wifi_networks():
     return ap_array
 
 def create_wpa_supplicant(ssid, wifi_key):
-    # edit inplace
-    if wifi_key == '':
-        wifi_key_line = '	key_mgmt=NONE'
-    else:
-        wifi_key_line = '	psk="' + wifi_key + '"'
+    uuid1 = uuid.uuid1()
+    temp_nmconnection_file = open('/tmp/wifi.nmconnection.tmp', 'w')
+    temp_nmconnection_file.write('[connection]\n')
+    temp_nmconnection_file.write('id=' + ssid + '\n')
+    temp_nmconnection_file.write(f'uuid={uuid1}\n')
+    temp_nmconnection_file.write('type=wifi\n')
+    temp_nmconnection_file.write('autoconnect=true\n')
+    temp_nmconnection_file.write('[wifi]\n')
+    temp_nmconnection_file.write('ssid=' + ssid + '\n')
+    temp_nmconnection_file.write('mode=infrastructure\n')
+    temp_nmconnection_file.write('[wifi-security]\n')
+    temp_nmconnection_file.write('key-mgmt=wpa-psk\n')
+    temp_nmconnection_file.write('psk=' + wifi_key + '\n')
+    temp_nmconnection_file.write('[ipv4]\n')
+    temp_nmconnection_file.write('method=auto\n')
+    temp_nmconnection_file.write('[ipv6]\n')
+    temp_nmconnection_file.write('method=ignore\n')
+    temp_nmconnection_file.close
+
+    os.system('mv /tmp/wifi.nmconnection.tmp "/etc/NetworkManager/system-connections/' + ssid + '.nmconnection"')
+    os.system('chown root:root "/etc/NetworkManager/system-connections/' + ssid + '.nmconnection"')
+    os.system('chmod 600 "/etc/NetworkManager/system-connections/' + ssid + '.nmconnection"')
     
-    in_network = 0
-    wpa_file = '/etc/wpa_supplicant/wpa_supplicant.conf'
-    with fileinput.FileInput(wpa_file, inplace=True) as wpa_supplicant:
-        for line in wpa_supplicant:
-            if in_network == 1:
-                if 'ssid=' in line:
-                    line_array = line.split('=')
-                    line_array[1] = ssid
-                    print(line_array[0] + '="' + str(line_array[1]) + '"')
-                elif 'key_mgmt=NONE' in line or 'psk=' in line:
-                    print(wifi_key_line)
-                else:
-                    print(line, end='')
-                    if '}' in line:
-                        in_network = 2
-            else:
-                print(line, end='')
-            if 'network=' in line and in_network < 2:
-                in_network = 1
-    if not in_network:
-        wpa_h = open(wpa_file, 'a')
-        wpa_h.write('network={\n')
-        wpa_h.write('	ssid="' + ssid + '"\n')
-        wpa_h.write(wifi_key_line + '\n')
-        wpa_h.write('}' + '\n')
-        wpa_h.close()
 
 def update_wpa(wpa_enabled, wpa_key):
     app.config_hash['wpa_enabled'] = str(wpa_enabled)
@@ -248,10 +253,26 @@ def main():
     app.hostapd.terminate()
     app.hostapd_conf.close()
     dnsmasq.terminate()
+
     subprocess.check_call(['ip','address','del', '10.0.0.1/24', 'dev', 'wlan0'])
     subprocess.check_call(['systemctl', 'daemon-reload'])
     subprocess.check_call(['systemctl', 'restart', 'wpa_supplicant.service', 'dhcpcd.service'])
     subprocess.check_call(['systemctl', 'start', 'dnsmasq.service'])
+
+
+
+
+    network_manager = subprocess.Popen(f'systemctl restart NetworkManager', shell=True, stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE, universal_newlines=True)
+    network_manager.communicate()
+
+    os.system('nmcli radio wifi on')
+    os.system('nmcli conn reload')
+
+    nmcli = subprocess.Popen(f'nmcli connection up "{ssid}"',
+                      shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                      universal_newlines=True)
+    nmcli.communicate()
 
 if __name__ == '__main__':
     main()
